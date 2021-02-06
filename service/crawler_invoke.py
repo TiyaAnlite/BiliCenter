@@ -1,6 +1,5 @@
 import json
 import time
-import random
 import threading
 from collections import Counter
 from multiprocessing.pool import ThreadPool
@@ -12,11 +11,11 @@ from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentClo
 REGION = "ap-guangzhou"  # 地域
 
 
-def invoke(func_name: str, data: dict, client: scf.Client, namespace: str, taskid: int, thrLock: threading.Lock):
+def invoke(func_name: str, data: dict, tencentKey: dict, namespace: str, taskid: int, thrLock: threading.Lock):
     with thrLock:
         print(f"Invoke task: {taskid}")
-    time.sleep(random.randint(1, 8) / 10)
     try:
+        client = scf.Client(secret_id=tencentKey["SecretId"], secret_key=tencentKey["SecretKey"], region=REGION)
         data = client.invoke(function_name=func_name, namespace=namespace, data=data)
     except TencentServerlessSDKException as e:
         print(e)
@@ -32,14 +31,13 @@ if __name__ == '__main__':
         tencentKey = json.load(fp)
     with open("config/scf.json") as fp:
         scfConfig = json.load(fp)
-    client = scf.Client(secret_id=tencentKey["SecretId"], secret_key=tencentKey["SecretKey"], region=REGION)
 
     args = []
     lock = threading.Lock()
     for i in range(100):
-        args.append(("iper", {"data": "d"}, client, scfConfig["namespaces"]["crawler"], i, lock))
+        args.append(("iper", {"data": "d"}, tencentKey, scfConfig["namespaces"]["crawler"], i, lock))
     start = time.perf_counter()
-    with ThreadPool(10) as pool:
+    with ThreadPool(5) as pool:
         res = pool.starmap(invoke, args)
     # print(res)
     usedtime = time.perf_counter() - start

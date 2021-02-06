@@ -130,5 +130,9 @@ dmypy.json
 
 # Project
 .idea
+test
 config
 template.yaml
+bilibili_api
+dist
+api_ref
