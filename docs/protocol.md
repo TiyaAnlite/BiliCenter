@@ -11,13 +11,13 @@
 
 ```json
 {
-    "eid": "61e16ac3-76bd-524d-a897-60b1d16de18e",  //唯一事件ID
-    "source": "0102",  //经编码的事件发起的中间件
-    "job": {}  //SCF jobs 详见下述内容
+    "eid": "61e16ac3-76bd-524d-a897-60b1d16de18e",
+    "source": "0102",
+    "job": {}
 }
 ```
 
-| 键               | 值                    |
+| keys             | values                |
 | ---------------- | --------------------- |
 | eid              | 唯一事件ID            |
 | callback_channel | 事件完成后回调的频道  |
@@ -35,25 +35,43 @@
 
 ```json
 {
-    "job_codec": "0102",  //经编码的任务编码
-    "kwargs": {  //传递给任务的参数
+    "job_codec": "0102",
+    "kwargs": {
         "arg_key": "arg_value"
     }
 }
 ```
 
+| keys      | values           |
+| --------- | ---------------- |
+| job_codec | 经编码的任务编码 |
+| kwargs    | 传递给任务的参数 |
+
+
+
 #### 事件回调数据
 
 ```json
 {
-    "code": 200,  //任务返回码
-    "msg": "ok",  //任务消息
-    "rid": "9ac005ada66a1c454ab0c0cbf40d7eaf"  //标志本次部署SCF任务的request_id
-    "source": "0102",  //事件发起的中间件
-    "eid": "f85a307e-656d-5e18-a413-1b3419e829c2",  //事件ID
-    "data": {}  //任务结构负载
+    "code": 200,
+    "msg": "ok",
+    "rid": "9ac005ada66a1c454ab0c0cbf40d7eaf",
+    "source": "0102",
+    "eid": "f85a307e-656d-5e18-a413-1b3419e829c2",
+    "data": {}
 }
 ```
+
+| keys   | values                          |
+| ------ | ------------------------------- |
+| code   | 任务返回码                      |
+| msg    | 任务消息                        |
+| rid    | 标志本次部署SCF任务的request_id |
+| source | 事件发起的中间件                |
+| eid    | 事件ID                          |
+| data   | 任务结构负载                    |
+
+
 
 #### 事件处理规则
 
@@ -75,13 +93,18 @@
 
 ```json
 {
-    "msg_type": "SCF 404",  //消息类型
-    "content": {  //具体消息的负载，不同消息的负载结构有所不同
+    "msg_type": "SCF 404",
+    "content": {
         "event": {},
         "msg": "xxxxx"
     }
 }
 ```
+
+| keys     | values                                     |
+| -------- | ------------------------------------------ |
+| msg_type | 消息类型                                   |
+| content  | 具体消息的负载，不同消息的负载结构有所不同 |
 
 
 
