@@ -1,8 +1,6 @@
 # 路径：从并发中心部署任务到SCF分布式容器
 
 import os
-import json
-import base64
 from functools import partial
 
 import bilibili_api
@@ -10,12 +8,12 @@ import bilibili_api
 
 class SCFJobs(object):
     # 任务序列化帮助类
-    bangumi_meta = bytes([0x1, 0x1])
-    bangumi_interact_data = bytes([0x1, 0x2])
-    bangumi_episodes_list = bytes([0x1, 0x3])
-    bangumi_episode_info = bytes([0x1, 0x4])
-    video_info = bytes([0x2, 0x1])
-    video_info_simple = bytes([0x2, 0x2])
+    bangumi_meta = bytes([0x1, 0x1]).hex()
+    bangumi_interact_data = bytes([0x1, 0x2]).hex()
+    bangumi_episodes_list = bytes([0x1, 0x3]).hex()
+    bangumi_episode_info = bytes([0x1, 0x4]).hex()
+    video_info = bytes([0x2, 0x1]).hex()
+    video_info_simple = bytes([0x2, 0x2]).hex()
 
     jobs = {
         bangumi_meta: bilibili_api.bangumi.get_meta,
@@ -35,7 +33,7 @@ def get_scf_namespace():
     return os.getenv("BILICENTER_SCFNAMESPACE")
 
 
-def deploy_job(jobs: bytes, kwargs: dict) -> dict:
+def deploy_job(jobs: str, kwargs: dict) -> dict:
     """
     生成部署任务所需参数\n
     :param jobs: 任务名(可用SCFJobs帮助类快速获取)
@@ -44,7 +42,7 @@ def deploy_job(jobs: bytes, kwargs: dict) -> dict:
     """
 
     event = {
-        "job_codec": base64.b64encode(jobs).decode(),
+        "job_codec": jobs,
         "kwargs": kwargs
     }
     return {
@@ -57,10 +55,11 @@ def deploy_job(jobs: bytes, kwargs: dict) -> dict:
 def accept_job(job_data: dict) -> dict:
     """
     调用请求接口获得数据\n
+    需要注意处理相关异常\n
     :param job_data: 任务请求和数据
     :return: 请求返回的数据
     """
 
-    job_type = base64.b64decode(job_data["job_codec"])
+    job_type = job_data["job_codec"]
     resp = SCFJobs.jobs[job_type](**job_data["kwargs"])
-    return json.loads(resp)
+    return resp

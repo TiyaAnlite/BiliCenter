@@ -2,13 +2,15 @@
 
 部署和测试服务时，需要为运行环境配置变量
 
-| 变量名                  | 值                          |
-| ----------------------- | --------------------------- |
-| TENCENTCLOUD_REGION     | 腾讯云访问地域              |
-| TENCENTCLOUD_SECRETID   | 腾讯云鉴权SecretId          |
-| TENCENTCLOUD_SECRETKEY  | 腾讯云鉴权SecretKey         |
-| BILICENTER_SCFNAMESPACE | 数据中心使用SCF的命名空间   |
-| BILICENTER_SCFNAME      | 数据中心并发部署使用的SCF名 |
+| 变量名                  | 值                                          |
+| ----------------------- | ------------------------------------------- |
+| TENCENTCLOUD_REGION     | 腾讯云访问地域                              |
+| TENCENTCLOUD_SECRETID   | 腾讯云鉴权SecretId                          |
+| TENCENTCLOUD_SECRETKEY  | 腾讯云鉴权SecretKey                         |
+| BILICENTER_SCFNAMESPACE | 数据中心使用SCF的命名空间                   |
+| BILICENTER_SCFNAME      | 数据中心并发部署使用的SCF名                 |
+| BILICENTER_REDIS_KWARGS | 用于连接Redis消息与配置中心的JSON参数字符串 |
+| BILICENTER_MYSQL_KWARGS | 用于连接MySQL核心数据库的JSON参数字符串     |
 
 ***如果在腾讯云内网服务器进行部署，可以添加以下变量内容经由内网SCF提高速度***
 
