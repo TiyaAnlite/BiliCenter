@@ -38,8 +38,8 @@ class Event(object):
 
     def push(self, r: redis.StrictRedis) -> str:
         """
-        推送一个事件至并发中心\n
-        **自动生成edi**\n
+        推送一次该事件至并发中心\n
+        **每次推送自动生成edi**\n
         :param r: Redis连接
         :return: 事件ID
         """
