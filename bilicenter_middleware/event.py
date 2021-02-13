@@ -4,13 +4,13 @@ import random
 
 import redis
 
-from event2job import deploy_job
+from .event2job import deploy_job, SCFJobs
 
 
 class Channels(object):
     """各中间件频道帮助类"""
-    ConcurrentController = "pub_biliCenter_Events"
-    CallbackCenter = "pub_biliCenter_callbacks"
+    ConcurrentController = "biliCenter_pub_Events"
+    CallbackCenter = "biliCenter_pub_callbacks"
 
 
 class Sources(object):
@@ -21,32 +21,41 @@ class Sources(object):
     ConcurrentController = bytes([0x2, 0x1]).hex()  # 并发控制器
     CallbackCenter = bytes([0x2, 0x2]).hex()  # 回调处理中心
 
+    sources = {
+        ApiEvent: "ApiEvent",
+        TriggerEvent: "TriggerEvent",
+        ConcurrentController: "ConcurrentController",
+        CallbackCenter: "CallbackCenter"
+    }
 
-def new_event(jobs: str, kwargs: dict, source: str) -> dict:
+
+class Event(object):
+    """事件类"""
+
+    def __init__(self, jobs: str, kwargs: dict, source: str):
+        self.source = source
+        self.job = deploy_job(jobs, kwargs)
+
+    def push(self, r: redis.StrictRedis) -> str:
+        """
+        推送一个事件至并发中心\n
+        **自动生成edi**\n
+        :param r: Redis连接
+        :return: 事件ID
+        """
+        eid = str(uuid.uuid5(uuid.uuid1(), "".join(random.choices("0123456789ABCDEF", k=3))))
+        event_data = dict(eid=eid, source=self.source, job=self.job)
+        r.publish(Channels.ConcurrentController, json.dumps(event_data))
+        return eid
+
+
+def new_event(jobs: str, kwargs: dict, source: str) -> Event:
     """
     生成一个事件\n
     **不包含eid**\n
     :param jobs: 任务名(可用SCFJobs帮助类快速获取)
     :param kwargs: 传入参数
     :param source: 事件来源(可用Sources帮助类快速获取)
-    :return:
+    :return: Event
     """
-    return {
-        "source": source,
-        "job": deploy_job(jobs, kwargs)
-    }
-
-
-def push_event(r: redis.StrictRedis, event: dict) -> str:
-    """
-    推送一个事件至并发中心\n
-    **自动生成edi**\n
-    :param r: Redis连接
-    :param event: 需要推送的事件
-    :return: 事件ID
-    """
-
-    eid = str(uuid.uuid5(uuid.uuid1(), "".join(random.choices("0123456789ABCDEF", k=3))))
-    event_data = dict(eid=eid, **event)
-    r.publish(Channels.ConcurrentController, json.dumps(event_data))
-    return eid
+    return Event(jobs, kwargs, source)
