@@ -17,11 +17,11 @@
 }
 ```
 
-| keys             | values                |
-| ---------------- | --------------------- |
-| eid              | 唯一事件ID            |
-| callback_channel | 事件完成后回调的频道  |
-| job              | SCF jobs 详见下述内容 |
+| keys   | values                |
+| ------ | --------------------- |
+| eid    | 唯一事件ID            |
+| source | 事件发起的中间件      |
+| job    | SCF jobs 详见下述内容 |
 
 
 
