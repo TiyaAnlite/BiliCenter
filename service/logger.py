@@ -10,14 +10,16 @@ class Logger(object):
     def get_debugger(name):
         """Return a sys.stderr debugger"""
 
-        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s [%(name)s]%(message)s')
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s %(levelname)s [%(name)s - %(threadName)s]%(message)s')
         return logging.getLogger(name)
 
     @staticmethod
     def get_logger(name):
         """Return a sys.stderr logger"""
 
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s [%(name)s]%(message)s')
+        logging.basicConfig(level=logging.INFO,
+                            format='%(asctime)s %(levelname)s [%(name)s - %(threadName)s]%(message)s')
         return logging.getLogger(name)
 
     @staticmethod
@@ -26,7 +28,7 @@ class Logger(object):
 
         Logger.log_cleaner(path)
         file_tuple = os.path.splitext(path)
-        fmt = logging.Formatter('%(asctime)s %(levelname)s [%(name)s]%(message)s')
+        fmt = logging.Formatter('%(asctime)s %(levelname)s [%(name)s - %(threadName)s]%(message)s')
         logger = copy.deepcopy(logging.getLogger(name))
         logger.setLevel(logging.DEBUG)
         file_handler = logging.FileHandler("_log".join(file_tuple))
@@ -47,7 +49,7 @@ class Logger(object):
 
         Logger.log_cleaner(path)
         file_tuple = os.path.splitext(path)
-        fmt = logging.Formatter('%(asctime)s %(levelname)s [%(name)s]%(message)s')
+        fmt = logging.Formatter('%(asctime)s %(levelname)s [%(name)s - %(threadName)s]%(message)s')
         logger = copy.deepcopy(logging.getLogger(name))
         logger.setLevel(logging.DEBUG)
         file_handler = logging.FileHandler("_log".join(file_tuple))
