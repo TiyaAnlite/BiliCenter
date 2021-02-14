@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import json
 import queue
@@ -9,6 +10,7 @@ from tencentserverless import scf
 from tencentserverless.exception import TencentServerlessSDKException
 from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
 
+sys.path.append("../")
 from bilicenter_middleware.event import Channels, Sources
 from logger import Logger
 
