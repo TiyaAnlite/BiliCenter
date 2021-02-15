@@ -13,10 +13,10 @@ def main_route(event, context):
         resdata["data"] = accept_job(event)
     except NetworkException as err:
         resdata["msg"] = "请求失败"
-        resdata["code"] = err.code
+        resdata["code"] = abs(err.code)
     except BilibiliException as err:
         resdata["msg"] = err.msg
-        resdata["code"] = abs(err.msg)
+        resdata["code"] = abs(err.code)
     except BilibiliApiException as err:
         resdata["msg"] = err.msg
         resdata["code"] = 500
