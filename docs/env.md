@@ -12,6 +12,14 @@
 | BILICENTER_REDIS_KWARGS | 用于连接Redis消息与配置中心的JSON参数字符串 |
 | BILICENTER_MYSQL_KWARGS | 用于连接MySQL核心数据库的JSON参数字符串     |
 
+JSON参数字符串举例
+
+*BILICENTER_REDIS_KWARGS:*
+
+```json
+{"host": "127.0.0.1", "port": 6379, "db": 0, "password": null}
+```
+
 ***如果在腾讯云内网服务器进行部署，可以添加以下变量内容经由内网SCF提高速度***
 
 **请勿**在外网测试环境使用这些变量，这会导致请求异常
