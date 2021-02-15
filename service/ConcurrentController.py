@@ -22,7 +22,7 @@ class ConcurrentController(object):
     *接收来自各个中间件的事件，并转换为SCF任务进行部署和管理*\n
     """
 
-    def __init__(self, log_file="ConcurrentController.log", debug=False):
+    def __init__(self, log_file="BiliCenter.log", debug=False):
         threading.current_thread().setName("Main")
         if debug:
             self.logger = Logger.get_file_debug_logger("ConcurrentController", log_file)
