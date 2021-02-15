@@ -10,7 +10,8 @@ from tencentserverless import scf
 from tencentserverless.exception import TencentServerlessSDKException
 from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
 
-sys.path.append("../")
+if "../" not in sys.path:
+    sys.path.append("../")
 from bilicenter_middleware.event import Channels, Sources
 from logger import Logger
 
@@ -36,7 +37,7 @@ class ConcurrentController(object):
         self.redis = redis.StrictRedis(connection_pool=self.redis_pool)  # 这是给主线程用的Redis连接对象
         self.init_redis()
         self.scf_max = int(self.redis.hget("config", "ConcurrentController.max"))
-        self.main_lock = threading.Lock()  # 主线程资源锁
+        self.logger.info(f"SCF Concurrent max is {self.scf_max}")
 
         self.event_queue = queue.Queue()  # 主事件队列(try_count, event)
         self.event_callback_queue = queue.Queue()  # 事件回调队列
@@ -47,6 +48,10 @@ class ConcurrentController(object):
         self.thr_listen = threading.Thread(target=self.thread_event_listener)
         self.thr_listen.setName("Listener")
         self.thr_listen.setDaemon(True)
+
+        self.thr_controller = threading.Thread(target=self.thread_event_controller)
+        self.thr_controller.setName("Controller")
+        self.thr_controller.setDaemon(True)
 
         self.thr_callback = threading.Thread(target=self.thread_event_callback)
         self.thr_callback.setName("Callback")
@@ -77,6 +82,18 @@ class ConcurrentController(object):
                 event_data = json.loads(event["data"])
                 self.logger.debug(f"Recv event {event_data['eid']} from {Sources.sources[event_data['source']]}")
                 self.event_queue.put((0, event_data))
+
+    def thread_event_controller(self):
+        """事件调度线程，代替主线程并发行为避免阻塞"""
+        self.logger.info("Controller started")
+        while True:
+            client = self.scf_client.get()
+            try_count, event = self.event_queue.get()
+            handler = threading.Thread(target=self.thread_event_handler,
+                                       kwargs=dict(client_id=client[0], client=client[1], event=event,
+                                                   try_count=try_count))
+            handler.setName(f"EventHandler({client[0]})")
+            handler.start()
 
     def thread_event_handler(self, client_id: int, client: scf.Client, event: dict, try_count: int):
         """事件处理.并发线程"""
@@ -148,22 +165,17 @@ class ConcurrentController(object):
             "content": content
         }
         self.logger.warning(f"[{msg_type}] -> {content}")
-        r.lpush("logs", json.dumps(log))
+        r.lpush("logs", json.dumps(log, ensure_ascii=False))
 
     def main(self):
         """主线程"""
         self.thr_listen.start()
+        self.thr_controller.start()
         self.thr_callback.start()
         self.logger.info("Ready to accept event")
         try:
             while True:
-                try_count, event = self.event_queue.get()
-                client = self.scf_client.get()
-                handler = threading.Thread(target=self.thread_event_handler,
-                                           kwargs=dict(client_id=client[0], client=client[1], event=event,
-                                                       try_count=try_count))
-                handler.setName(f"EventHandler({client[0]})")
-                handler.start()
+                time.sleep(60)
         except KeyboardInterrupt:
             self.logger.info("Quit by user.")
             exit(0)
