@@ -75,13 +75,17 @@ class ConcurrentController(object):
         """事件接受线程"""
         r = redis.StrictRedis(connection_pool=self.redis_pool)
         redis_pub = r.pubsub()
-        self.logger.info(f"Subscribe event channels")
+        self.logger.info("Subscribe event channels")
         redis_pub.subscribe(Channels.ConcurrentController)  # 订阅事件
         for event in redis_pub.listen():
             if event["type"] == "message":
-                event_data = json.loads(event["data"])
-                self.logger.debug(f"Recv event {event_data['eid']} from {Sources.sources[event_data['source']]}")
-                self.event_queue.put((0, event_data))
+                try:
+                    event_data = json.loads(event["data"])
+                except json.JSONDecodeError:
+                    self.logger.error(f"Unexpect data: {event['data']}")
+                else:
+                    self.logger.debug(f"Recv event {event_data['eid']} from {Sources.sources[event_data['source']]}")
+                    self.event_queue.put((0, event_data))
 
     def thread_event_controller(self):
         """事件调度线程，代替主线程并发行为避免阻塞"""
