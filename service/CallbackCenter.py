@@ -4,7 +4,6 @@ import time
 import json
 import queue
 import threading
-import importlib
 import collections
 from queue import Empty as queue_Empty
 
@@ -13,7 +12,8 @@ import pymysql
 
 if "../" not in sys.path:
     sys.path.append("../")
-from bilicenter_middleware.event import SCFJobs, Channels
+from bilicenter_middleware.event import Channels
+from bilicenter_middleware.discovery import auto_register
 import logger
 
 
@@ -23,18 +23,18 @@ class CallbackCenter(object):
     *接受并发中心的回调事件，并传递至绑定的处理函数完成数据处理与持久化*
     """
 
-    def __init__(self, log_file="BiliCenter.log", debug=False):
+    def __init__(self, log_file="BiliCenter_callbackCenter.log", debug=False):
         threading.current_thread().setName("Main")
         if debug:
             self.logger = logger.Logger.get_file_debug_logger("CallbackCenter", log_file)
         else:
             self.logger = logger.Logger.get_file_log_logger("CallbackCenter", log_file)
         self.logger.info("Starting CallbackCenter")
-        self.callback_func = collections.defaultdict(lambda: self.__default_callback)
+        self.callback_func = auto_register(collections.defaultdict(lambda: self.__default_callback), "callback",
+                                           self.logger)
         self.callback_queue = queue.Queue()  # 回调信息队列
         self.sql_queue = queue.Queue()  # SQL异步执行队列(不支持查询) | (SQL, args,)
         self.main_lock = threading.Lock()  # 公共变量锁
-        self.callback_discovery()
 
         redis_config = json.loads(os.getenv("BILICENTER_REDIS_KWARGS"))
         redis_config.update({"decode_responses": True})
@@ -67,20 +67,6 @@ class CallbackCenter(object):
                 self.logger.info("Reconnect to MySQL")
                 self.sql = pymysql.connect(**json.loads(os.getenv("BILICENTER_MYSQL_KWARGS")))
         return self.sql.cursor()
-
-    def callback_discovery(self):
-        """回调函数发现与注册"""
-        module = []
-        for file in os.listdir("callback"):
-            s = os.path.splitext(file)
-            if s[1] == ".py":
-                module.append(s[0])
-        for m in module:
-            loaded_module = importlib.import_module(f"callback.{m}")
-            self.logger.info(f"discovery: {m}")
-            for k, v in loaded_module.CALLBACK_INFO.items():
-                self.logger.info(f"register {v} to {k}")
-                self.callback_func[k] = v
 
     @staticmethod
     def __default_callback(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logger.logging.Logger):

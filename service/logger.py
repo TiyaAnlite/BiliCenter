@@ -7,7 +7,7 @@ import logging
 
 class Logger(object):
     @staticmethod
-    def get_debugger(name):
+    def get_debugger(name) -> logging.Logger:
         """Return a sys.stderr debugger"""
 
         logging.basicConfig(level=logging.DEBUG,
@@ -15,7 +15,7 @@ class Logger(object):
         return logging.getLogger(name)
 
     @staticmethod
-    def get_logger(name):
+    def get_logger(name) -> logging.Logger:
         """Return a sys.stderr logger"""
 
         logging.basicConfig(level=logging.INFO,
@@ -23,7 +23,7 @@ class Logger(object):
         return logging.getLogger(name)
 
     @staticmethod
-    def get_file_log_logger(name, path):
+    def get_file_log_logger(name, path) -> logging.Logger:
         """Return a logging file logger"""
 
         Logger.log_cleaner(path)
@@ -44,7 +44,7 @@ class Logger(object):
         return logger
 
     @staticmethod
-    def get_file_debug_logger(name, path):
+    def get_file_debug_logger(name, path) -> logging.Logger:
         """Return a debug file logger"""
 
         Logger.log_cleaner(path)
