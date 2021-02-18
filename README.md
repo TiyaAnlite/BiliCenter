@@ -5,4 +5,5 @@
 
 ## 系统设计
 
-![BiliCenter](https://raw.githubusercontent.com/TiyaAnlite/BiliCenter/main/docs/BiliCenter.png)
+![BiliCenter](https://raw.githubusercontent.com/TiyaAnlite/BiliCenter/main/docs/BiliCenter.svg)
+
