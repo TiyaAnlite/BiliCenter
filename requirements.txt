@@ -1,0 +1,5 @@
+redis
+pymysql
+tencentcloud-sdk-python
+tencentserverless
+bilibili-api>=4.0.1
