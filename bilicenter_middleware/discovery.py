@@ -37,3 +37,4 @@ def auto_register(d: dict, area: str, logger: logging.Logger):
     for k, v in discoverer(area, logger):
         logger.info(f"Register {v} to {k}")
         d[k] = v
+    return d
