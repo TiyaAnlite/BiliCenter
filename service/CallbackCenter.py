@@ -42,8 +42,10 @@ class CallbackCenter(object):
         self.logger.info("Connect to redis")
         self.redis = redis.StrictRedis(connection_pool=self.redis_pool)
 
+        sql_config = json.loads(os.getenv("BILICENTER_MYSQL_KWARGS"))
+        sql_config.update({"read_timeout": 10, "write_timeout": 10})
         self.logger.info("Connect to MySQL")
-        self.sql = pymysql.connect(**json.loads(os.getenv("BILICENTER_MYSQL_KWARGS")))
+        self.sql = pymysql.connect(**sql_config)
 
         # 初始化相关子线程
         self.thr_accept = threading.Thread(target=self.thread_callback_accept)
@@ -69,15 +71,15 @@ class CallbackCenter(object):
         return self.sql.cursor()
 
     @staticmethod
-    def __default_callback(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logger.logging.Logger):
+    def __default_callback(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, log: logger.logging.Logger):
         """
         默认回调函数\n
         :param callback: 回调事件信息
         :param r: Redis连接
         :param sql_queue: SQL执行队列(不支持查询)
-        :param logger: 日志记录对象
+        :param log: 日志记录对象
         """
-        logger.warning(f"Unknown jobs: {callback}")
+        log.warning(f"Unknown jobs: {callback}")
 
     def thread_callback_accept(self):
         """回调接受线程"""
