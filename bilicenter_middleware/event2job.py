@@ -9,14 +9,16 @@ import bilibili_api
 class SCFJobs(object):
     # 任务序列化帮助类
     bangumi_meta = bytes([0x1, 0x1]).hex()
-    bangumi_interact_data = bytes([0x1, 0x2]).hex()
-    bangumi_episodes_list = bytes([0x1, 0x3]).hex()
-    bangumi_episode_info = bytes([0x1, 0x4]).hex()
+    bangumi_collective_info = bytes([0x1, 0x2]).hex()
+    bangumi_interact_data = bytes([0x1, 0x3]).hex()
+    bangumi_episodes_list = bytes([0x1, 0x4]).hex()
+    bangumi_episode_info = bytes([0x1, 0x5]).hex()
     video_info = bytes([0x2, 0x1]).hex()
     video_info_simple = bytes([0x2, 0x2]).hex()
 
     jobs = {
         bangumi_meta: bilibili_api.bangumi.get_meta,
+        bangumi_collective_info: bilibili_api.bangumi.get_collective_info,
         bangumi_interact_data: bilibili_api.bangumi.get_interact_data,
         bangumi_episodes_list: bilibili_api.bangumi.get_episodes_list,
         bangumi_episode_info: bilibili_api.bangumi.get_episode_info,
