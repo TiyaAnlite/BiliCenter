@@ -59,11 +59,32 @@
 
 ### SCF jobs
 
-并发中心将任务部署至分布式SCF采用的交换格式
+并发中心接收并部署任务的交换格式，一般情况下不需要手动构建，以下内容仅作为参数说明，便于在以下的`事件回调信息`中提取参数。在构造数据时，只需要使用相关中间件封装的工具方法即可
 
 实现参见`bilicenter_middleware/event2job.py`
 
+```json
+{
+    "function_name": "biliHelper",
+    "namespace": "crawler",
+    "data": {
+        "job_codec": "0102",
+        "kwargs": {
+            "arg_key": "arg_value"
+        }
+    }
+}
+```
+
+| keys          | values                                          |
+| ------------- | ----------------------------------------------- |
+| function_name | SCF函数名(工具方法会从配置的环境变量自动读取)   |
+| namespace     | SCF命名空间(工具方法会从配置的环境变量自动读取) |
+| data          | SCF传递数据                                     |
+
 #### 任务部署
+
+并发中心将任务部署至分布式SCF时具体传递的数据
 
 ```json
 {
