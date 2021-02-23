@@ -94,9 +94,8 @@ class CallbackCenter(object):
                 except json.JSONDecodeError:
                     self.logger.error(f"Unexpect data: {callback['data']}")
                 else:
-                    if callback_data["code"] == 200:
-                        self.callback_queue.put(callback_data)
-                    else:
+                    self.callback_queue.put(callback_data)  # 包括非200也会回调
+                    if callback_data["code"] != 200:
                         self.logger.warning(
                             f"Received an error callback: [{callback_data['code']}]{callback_data['msg']}")
                         self.logger.info(f"Callback: {callback_data}")
