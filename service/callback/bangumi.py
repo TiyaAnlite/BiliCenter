@@ -4,15 +4,15 @@ import logging
 
 import redis
 from bilicenter_middleware.event import SCFJobs, Sources, new_event
-from bilicenter_middleware.statement4SQL import make_update_query
+from bilicenter_middleware.statement4SQL import make_update_query, make_insert_query
 
 
 def meta(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
     if callback["code"] == 200:
         mid = callback["data"]["media"]["media_id"]
         sid = callback["data"]["media"]["season_id"]
-        query = "INSERT INTO `status_bangumi` (mid,sid) VALUES (%s,%s) ON DUPLICATE KEY UPDATE sid=%s"
-        args = [mid, sid, sid]
+        query = "INSERT IGNORE INTO `status_bangumi` (mid,sid) VALUES (%s,%s)"
+        args = [mid, sid]
         sql_queue.put((query, args))
 
         update_data = {
@@ -57,13 +57,20 @@ def collective(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, log
             "timestamp": int(time.time())
         }
         sql_queue.put(make_update_query("status_bangumi", update_data, dict(sid=sid)))
-        logger.info(f"Update collective at {sid}")
+        logger.info(f"Update collective at {sid}, {len(callback['data']['episodes'])} videos")
+        for ep in callback["data"]["episodes"]:
+            ep_map = {
+                "aid": ep["aid"],
+                "sid": sid,
+                "s_index": ep["title"]
+            }
+            sql_queue.put(make_insert_query("map_episodes", ep_map, safety_mode=True))
+            event_aid = new_event(SCFJobs.video_info_simple, dict(bvid=ep["bvid"]), Sources.CallbackCenter)
+            event_aid.push(r)
 
 
 CALLBACK_INFO = {
     SCFJobs.bangumi_meta: meta,
     SCFJobs.bangumi_interact_data: interact,
-    SCFJobs.bangumi_collective_info: collective
+    SCFJobs.bangumi_collective_info: collective,
 }
-
-print("Reg.")
