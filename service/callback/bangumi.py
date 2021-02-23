@@ -67,7 +67,8 @@ def collective(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, log
                 "s_index": ep["title"]
             }
             sql_queue.put(make_insert_query("map_episodes", ep_map, safety_mode=True))
-            event_aid = new_event(SCFJobs.video_info_simple, dict(bvid=ep["bvid"]), Sources.CallbackCenter)
+            event_aid = new_event(SCFJobs.video_info_simple, dict(bvid=ep["bvid"]), Sources.CallbackCenter,
+                                  attach=dict(pub=ep["pub_time"]))
             event_aid.push(r)
 
 
