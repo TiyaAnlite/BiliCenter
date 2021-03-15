@@ -8,6 +8,7 @@ from bilicenter_middleware.statement4SQL import make_update_query, make_insert_q
 
 
 def meta(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
+    # 元数据：mid与sid，剧集信息，评分信息
     if callback["code"] == 200:
         mid = callback["data"]["media"]["media_id"]
         sid = callback["data"]["media"]["season_id"]
@@ -28,7 +29,15 @@ def meta(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: l
         sql_queue.put(make_update_query("status_bangumi", bangumi_data, dict(mid=mid)))
         logger.info(f"Update bangumi mid->sid: {mid}->{sid}")
         # 生成事件InteractData, CollectiveInfo
-        event_interact = new_event(SCFJobs.bangumi_interact_data, dict(season_id=sid), Sources.CallbackCenter)
+        # 为InteractData附加score信息
+        attch_score = None
+        if "rating" in callback["data"]["media"]:
+            attch_score = {
+                "score_people": callback["data"]["media"]["rating"]["count"],
+                "score": callback["data"]["media"]["rating"]["score"]
+            }
+        event_interact = new_event(SCFJobs.bangumi_interact_data, dict(season_id=sid), Sources.CallbackCenter,
+                                   attach=attch_score)
         eid = event_interact.push(r)
         logger.info(f"Pushed new [InteractData] event {eid}")
         event_collective = new_event(SCFJobs.bangumi_collective_info, dict(season_id=sid), Sources.CallbackCenter)
@@ -37,6 +46,7 @@ def meta(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: l
 
 
 def interact(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
+    # 互动信息：整体播放订阅弹幕，bangumi的logs实现部分
     if callback["code"] == 200:
         sid = callback["job"]["data"]["kwargs"]["season_id"]
         interact_data = {
@@ -46,11 +56,21 @@ def interact(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logge
             "danmakus": callback["data"]["danmakus"],
             "timestamp": int(time.time())
         }
+        log_bangumi_data = {
+            "sid": sid,
+            "score_people": 0,
+            "score": 0
+        }
+        log_bangumi_data.update(interact_data)
+        if callback["attach"]:
+            log_bangumi_data.update(callback["attach"])
         sql_queue.put(make_update_query("status_bangumi", interact_data, dict(sid=sid)))
+        sql_queue.put(make_insert_query("logs_bangumi", log_bangumi_data))
         logger.info(f"Update interact at {sid}")
 
 
 def collective(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
+    # 剧集扩展信息：开播完结状态，记录剧集信息，发起剧集链式调用
     if callback["code"] == 200:
         sid = callback["job"]["data"]["kwargs"]["season_id"]
         collective_data = {
