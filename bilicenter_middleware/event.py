@@ -1,3 +1,4 @@
+import time
 import json
 import uuid
 import random
@@ -45,7 +46,8 @@ class Event(object):
         :return: 事件ID
         """
         eid = str(uuid.uuid5(uuid.uuid1(), "".join(random.choices("0123456789ABCDEF", k=3))))
-        event_data = dict(eid=eid, source=self.source, job=self.job, attach=self.attach)
+        event_data = dict(eid=eid, source=self.source, job=self.job, attach=self.attach,
+                          event_timestamp=int(time.time()))
         r.publish(Channels.ConcurrentController, json.dumps(event_data))
         return eid
 

@@ -48,16 +48,18 @@
     "eid": "61e16ac3-76bd-524d-a897-60b1d16de18e",
     "source": "0102",
     "attach": {},
-    "job": {}
+    "job": {},
+    "event_timestamp": 1615856135
 }
 ```
 
-| keys   | values                                                     |
-| ------ | ---------------------------------------------------------- |
-| eid    | 唯一事件ID                                                 |
-| source | 事件发起的中间件                                           |
-| attach | 事件附加信息，会原样带入时间回调信息中(数据类型强制为dict) |
-| job    | SCF jobs 详见下述内容                                      |
+| keys            | values                                                     |
+| --------------- | ---------------------------------------------------------- |
+| eid             | 唯一事件ID                                                 |
+| source          | 事件发起的中间件                                           |
+| attach          | 事件附加信息，会原样带入时间回调信息中(数据类型强制为dict) |
+| job             | SCF jobs 详见下述内容                                      |
+| event_timestamp | 事件生成的时间                                             |
 
 
 
@@ -119,20 +121,24 @@
     "eid": "f85a307e-656d-5e18-a413-1b3419e829c2",
     "attach": {},
     "data": {},
-    "job": {}
+    "job": {},
+    "event_timestamp": 1615856135,
+    "callback_timestamp": 1615856249
 }
 ```
 
-| keys   | values                           |
-| ------ | -------------------------------- |
-| code   | 任务执行返回码                   |
-| msg    | 任务执行结果信息                 |
-| rid    | 标志本次部署SCF任务的request_id  |
-| source | 事件发起的中间件                 |
-| eid    | 事件ID                           |
-| attach | 事件附加信息                     |
-| data   | 任务结构负载                     |
-| job    | 本次任务信息，详见上方`SCF jobs` |
+| keys               | values                           |
+| ------------------ | -------------------------------- |
+| code               | 任务执行返回码                   |
+| msg                | 任务执行结果信息                 |
+| rid                | 标志本次部署SCF任务的request_id  |
+| source             | 事件发起的中间件                 |
+| eid                | 事件ID                           |
+| attach             | 事件附加信息                     |
+| data               | 任务结构负载                     |
+| job                | 本次任务信息，详见上方`SCF jobs` |
+| event_timestamp    | 事件生成时间                     |
+| callback_timestamp | 回调生成时间                     |
 
 
 

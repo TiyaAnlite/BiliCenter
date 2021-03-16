@@ -131,6 +131,7 @@ class CallbackCenter(object):
                         try:
                             cursor.execute(query, args)
                         except pymysql.err.DatabaseError as err:
+                            # 执行时错误
                             self.logger.error(f"Execute error: {query} -> {args}")
                             self.logger.error(err)
                     self.sql.commit()

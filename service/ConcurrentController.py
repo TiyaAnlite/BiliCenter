@@ -104,6 +104,7 @@ class ConcurrentController(object):
         self.logger.info(f"SCF job{f'(try {try_count})' if try_count else ''}:{event['eid']}")
         try:
             callback = json.loads(client.invoke(**event['job']))
+            callback.update(dict(callback_timestamp=int(time.time())))
             callback.update(event)
             # print(callback)
             if callback["code"] == 412 or callback["code"] == 500:  # 访问封禁或请求错误
@@ -147,6 +148,7 @@ class ConcurrentController(object):
     def __event_try(self, try_count: int, event: dict, callback: dict):
         """事件异常重试相关组件，控制进行重试或者直接回调"""
         if try_count >= 3:  # 超过重试，回调
+            self.logger.error(f"Put a dead letter: {event['eid']}")
             self.event_callback_queue.put(callback)
             with redis.StrictRedis(connection_pool=self.redis_pool) as r:
                 r.lpush("dead_letter", json.dumps(callback))  # 死信队列
