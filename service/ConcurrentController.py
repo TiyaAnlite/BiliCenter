@@ -101,7 +101,9 @@ class ConcurrentController(object):
 
     def thread_event_handler(self, client_id: int, client: scf.Client, event: dict, try_count: int):
         """事件处理.并发线程"""
-        self.logger.info(f"SCF job{f'(try {try_count})' if try_count else ''}:{event['eid']}")
+        # self.logger.info(f"SCF job{f'(try {try_count})' if try_count else ''}:{event['eid']}")
+        if try_count:
+            self.logger.info(f"SCF job(try {try_count}):{event['eid']}")
         try:
             callback = json.loads(client.invoke(**event['job']))
             callback.update(dict(callback_timestamp=int(time.time())))

@@ -66,7 +66,7 @@ def interact(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logge
             log_bangumi_data.update(callback["attach"])
         sql_queue.put(make_update_query("status_bangumi", interact_data, dict(sid=sid)))
         sql_queue.put(make_insert_query("logs_bangumi", log_bangumi_data))
-        logger.info(f"Update interact at {sid}")
+        logger.info(f"Update bangumi interact at {sid}")
 
 
 def collective(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
@@ -79,7 +79,7 @@ def collective(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, log
             "timestamp": int(time.time())
         }
         sql_queue.put(make_update_query("status_bangumi", collective_data, dict(sid=sid)))
-        logger.info(f"Update collective at {sid}, {len(callback['data']['episodes'])} videos")
+        logger.info(f"Update bangumi collective at {sid}, {len(callback['data']['episodes'])} videos")
         for ep in callback["data"]["episodes"]:
             ep_map = {
                 "aid": ep["aid"],

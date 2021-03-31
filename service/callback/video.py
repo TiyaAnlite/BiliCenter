@@ -10,7 +10,7 @@ from bilicenter_middleware.statement4SQL import make_insert_query
 def simple_video(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
     # 简单视频信息：包含视频数据相关纬度内容，video的logs实现部分
     if callback["code"] == 200:
-        logger.info(f"Update {callback['data']['bvid']}(av{callback['data']['aid']})")
+        # logger.info(f"Update {callback['data']['bvid']}(av{callback['data']['aid']})")
         video_data = {
             "aid": callback["data"]["aid"],
             "bvid": callback["data"]["bvid"],
