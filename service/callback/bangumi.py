@@ -39,10 +39,10 @@ def meta(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: l
         event_interact = new_event(SCFJobs.bangumi_interact_data, dict(season_id=sid), Sources.CallbackCenter,
                                    attach=attch_score)
         eid = event_interact.push(r)
-        logger.info(f"Pushed new [InteractData] event {eid}")
+        # logger.info(f"Pushed new [InteractData] event {eid}")
         event_collective = new_event(SCFJobs.bangumi_collective_info, dict(season_id=sid), Sources.CallbackCenter)
         eid = event_collective.push(r)
-        logger.info(f"Pushed new [CollectiveInfo] event {eid}")
+        # logger.info(f"Pushed new [CollectiveInfo] event {eid}")
 
 
 def interact(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
