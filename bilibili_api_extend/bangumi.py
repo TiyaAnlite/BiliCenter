@@ -18,7 +18,7 @@ def get_rank_pgc(verify: bilibili_api.utils.Verify = None):
         "season_type": 1,
         "day": 3
     }
-    resp = bilibili_api.utils.get(api, params=params, cookies=verify.get_cookies())
+    resp = bilibili_api.utils.get(api, params=params, cookies=verify.get_cookies(), headers=utils.DEFAULT_HEADERS)
     return resp
 
 
