@@ -36,6 +36,8 @@ class Event(object):
     def __init__(self, jobs: str, kwargs: dict, source: str, attach: dict = None):
         self.source = source
         self.attach = attach
+        if not self.attach:
+            self.attach = dict()
         self.job = deploy_job(jobs, kwargs)
 
     def push(self, r: redis.StrictRedis) -> str:
