@@ -111,7 +111,7 @@ CREATE TABLE `status_bangumi` (
   `is_started` tinyint unsigned DEFAULT NULL COMMENT '开播状态',
   `is_finish` tinyint unsigned DEFAULT NULL COMMENT '完结状态',
   `timestamp_view` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间戳(观察用)',
-  `timestamp` int unsigned NOT NULL COMMENT '更新时间戳',
+  `timestamp` int unsigned DEFAULT NULL COMMENT '更新时间戳',
   `watch` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '系统监视标志',
   PRIMARY KEY (`mid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='番剧信息表';
