@@ -2,5 +2,5 @@ redis
 pymysql
 tencentcloud-sdk-python
 tencentserverless
-bilibili-api>=4.0.1
+bilibili-api>=4.0.1,<5.0.0
 croniter

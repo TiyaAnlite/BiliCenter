@@ -6,6 +6,7 @@ DEFAULT_HEADERS = {
     'Accept-Language': 'zh-CN,zh;q=0.9',  # 以防后患
     'cache-control': 'no-cache',
     'pragma': 'no-cache',
+    "Referer": "https://www.bilibili.com/",
     'sec-ch-ua': '"Google Chrome";v="87", "\"Not;A\\Brand";v="99", "Chromium";v="87"',
     'sec-ch-ua-mobile': '?0',
     'sec-fetch-dest': 'document',

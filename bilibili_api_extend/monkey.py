@@ -1,8 +1,13 @@
-from . import common, bangumi
+from . import utils, common, bangumi
 import bilibili_api
 
 
+def path_headers():
+    bilibili_api.utils.DEFAULT_HEADERS = utils.DEFAULT_HEADERS
+
+
 def path_all():
+    path_headers()
     path_modules = [
         common,
         bangumi
