@@ -127,18 +127,18 @@
 }
 ```
 
-| keys               | values                           |
-| ------------------ | -------------------------------- |
-| code               | 任务执行返回码                   |
-| msg                | 任务执行结果信息                 |
-| rid                | 标志本次部署SCF任务的request_id  |
-| source             | 事件发起的中间件                 |
-| eid                | 事件ID                           |
-| attach             | 事件附加信息                     |
-| data               | 任务结构负载                     |
-| job                | 本次任务信息，详见上方`SCF jobs` |
-| event_timestamp    | 事件生成时间                     |
-| callback_timestamp | 回调生成时间                     |
+| keys               | values                             |
+| ------------------ | ---------------------------------- |
+| code               | 任务执行返回码                     |
+| msg                | 任务执行结果信息                   |
+| rid                | 标志本次部署SCF任务的request_id    |
+| source             | 事件发起的中间件                   |
+| eid                | 事件ID                             |
+| attach             | 事件附加信息                       |
+| data               | 任务结构负载，即本次任务的执行结果 |
+| job                | 本次任务信息，详见上方`SCF jobs`   |
+| event_timestamp    | 事件生成时间                       |
+| callback_timestamp | 回调生成时间                       |
 
 
 

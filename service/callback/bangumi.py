@@ -70,30 +70,69 @@ def interact(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logge
 
 
 def collective(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
+    # 更新sid番剧映射表
     # 剧集扩展信息：开播完结状态，记录剧集信息，发起剧集链式调用
+    # 根据attach传入特殊动作，关闭链式调用与剧集信息记录
     if callback["code"] == 200:
-        sid = callback["job"]["data"]["kwargs"]["season_id"]
-        collective_data = {
-            "is_started": callback["data"]["publish"]["is_started"],
-            "is_finish": callback["data"]["publish"]["is_finish"],
-            "timestamp": int(time.time())
+        # sid = callback["job"]["data"]["kwargs"]["season_id"]
+        sid = callback["data"]["season_id"]
+        sid_map_data = {
+            "mid": callback["data"]["media_id"],
+            "sid": sid,
+            "title": callback["data"]["title"]
         }
-        sql_queue.put(make_update_query("status_bangumi", collective_data, dict(sid=sid)))
-        logger.info(f"Update bangumi collective at {sid}, {len(callback['data']['episodes'])} videos")
-        for ep in callback["data"]["episodes"]:
-            ep_map = {
-                "aid": ep["aid"],
-                "sid": sid,
-                "s_index": ep["title"]
+        sql_queue.put(make_insert_query("map_media", sid_map_data, safety_mode=True))
+        if not callback["attach"].get("map_update"):
+            # 原路径
+            collective_data = {
+                "is_started": callback["data"]["publish"]["is_started"],
+                "is_finish": callback["data"]["publish"]["is_finish"],
+                "timestamp": int(time.time())
             }
-            sql_queue.put(make_insert_query("map_episodes", ep_map, safety_mode=True))
-            event_aid = new_event(SCFJobs.video_info_simple, dict(bvid=ep["bvid"]), Sources.CallbackCenter,
-                                  attach=dict(pub=ep["pub_time"]))
-            event_aid.push(r)
+            sql_queue.put(make_update_query("status_bangumi", collective_data, dict(sid=sid)))
+            logger.info(f"Update bangumi collective at {sid}, {len(callback['data']['episodes'])} videos")
+            for ep in callback["data"]["episodes"]:
+                ep_map = {
+                    "aid": ep["aid"],
+                    "sid": sid,
+                    "s_index": ep["title"]
+                }
+                sql_queue.put(make_insert_query("map_episodes", ep_map, safety_mode=True))
+                event_aid = new_event(SCFJobs.video_info_simple, dict(bvid=ep["bvid"]), Sources.CallbackCenter,
+                                      attach=dict(pub=ep["pub_time"]))
+                event_aid.push(r)
+
+
+def rank(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
+    # 番剧排行榜
+    if callback["code"] == 200:
+        nowtime = int(time.time())
+        logger.info(f"Update ranklist: {len(callback['data']['list'])}")
+        for bangumi in callback["data"]["list"]:
+            # 这里暂时不加入title，先更新logs表
+            rank_data = {
+                "rank": bangumi["rank"],
+                "pts": bangumi["pts"],
+                "sid": bangumi["season_id"],
+                "danmakus": bangumi["stat"]["danmaku"],
+                "follow": bangumi["stat"]["follow"],
+                "series_follow": bangumi["stat"]["series_follow"],
+                "views": bangumi["stat"]["view"],
+                "timestamp": nowtime
+            }
+            sql_queue.put(make_insert_query("logs_bangumi_rank", rank_data))
+            rank_data.update({
+                "title": bangumi["title"]
+            })
+            sql_queue.put(make_insert_query("status_bangumi_rank", rank_data, safety_mode=True, update=True))
+            e = new_event(SCFJobs.bangumi_collective_info, dict(season_id=bangumi["season_id"]), Sources.CallbackCenter,
+                          attach=dict(map_update=True))
+            e.push(r)
 
 
 CALLBACK_INFO = {
     SCFJobs.bangumi_meta: meta,
     SCFJobs.bangumi_interact_data: interact,
     SCFJobs.bangumi_collective_info: collective,
+    SCFJobs.bangumi_rank: rank
 }
