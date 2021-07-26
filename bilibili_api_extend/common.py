@@ -6,10 +6,12 @@ import bilibili_api
 
 import requests
 
+PATTREN_INITIAL_STATE = re.compile(r"window.__INITIAL_STATE__=({.*?});")
+
 
 def get_index_inital_state(verify: bilibili_api.utils.Verify = None) -> dict:
     """
-    拉取主站主页初始化信息(总成)
+    拉取主站主页初始化信息(总成)\n
     :param verify:
     :return:
     """
@@ -19,8 +21,7 @@ def get_index_inital_state(verify: bilibili_api.utils.Verify = None) -> dict:
     resp = requests.get("https://www.bilibili.com/", cookies=verify.get_cookies(), headers=utils.DEFAULT_HEADERS)
     if resp.status_code != 200:
         raise bilibili_api.exceptions.NetworkException(resp.status_code)
-    pattern = re.compile(r"window.__INITIAL_STATE__=(\{.*?\});")
-    match = re.search(pattern, resp.content.decode())
+    match = re.search(PATTREN_INITIAL_STATE, resp.content.decode())
     if match is None:
         raise bilibili_api.exceptions.BilibiliApiException("未找到番剧信息")
     try:
@@ -32,7 +33,7 @@ def get_index_inital_state(verify: bilibili_api.utils.Verify = None) -> dict:
 
 def get_recommend(verify: bilibili_api.utils.Verify = None) -> list:
     """
-    获取首页推荐
+    获取首页推荐\n
     :param verify:
     :return:
     """
