@@ -64,7 +64,7 @@ CREATE TABLE `map_episodes` (
   `aid` int unsigned NOT NULL COMMENT '视频av号',
   `sid` int unsigned NOT NULL COMMENT '番剧season id链接',
   `s_index` varchar(10) NOT NULL COMMENT '剧集',
-  PRIMARY KEY (`aid`)
+  PRIMARY KEY (`aid`,`sid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='番剧单集-av号映射表';
 
 /*Table structure for table `map_media` */
@@ -73,7 +73,7 @@ CREATE TABLE `map_media` (
   `mid` int unsigned NOT NULL COMMENT '番剧页面media id',
   `sid` int unsigned NOT NULL COMMENT '番剧season id',
   `title` text NOT NULL COMMENT '标题',
-  PRIMARY KEY (`mid`)
+  PRIMARY KEY (`mid`,`sid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Table structure for table `stat_video` */
