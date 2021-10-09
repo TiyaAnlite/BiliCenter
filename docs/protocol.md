@@ -73,6 +73,7 @@
 {
     "function_name": "biliHelper",
     "namespace": "crawler",
+    "qualifier": "$LATEST",
     "data": {
         "job_codec": "0102",
         "kwargs": {
@@ -82,11 +83,12 @@
 }
 ```
 
-| keys          | values                                          |
-| ------------- | ----------------------------------------------- |
-| function_name | SCF函数名(工具方法会从配置的环境变量自动读取)   |
-| namespace     | SCF命名空间(工具方法会从配置的环境变量自动读取) |
-| data          | SCF传递数据                                     |
+| keys          | values                                                       |
+| ------------- | ------------------------------------------------------------ |
+| function_name | SCF函数名(工具方法会从配置的环境变量自动读取)                |
+| namespace     | SCF命名空间(工具方法会从配置的环境变量自动读取)              |
+| qualifier     | SCF执行目标版本(工具方法会从配置的环境变量自动读取并配置默认值) |
+| data          | SCF传递数据                                                  |
 
 #### 任务部署
 

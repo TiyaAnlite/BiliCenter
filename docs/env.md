@@ -9,6 +9,7 @@
 | TENCENTCLOUD_SECRETKEY  | 腾讯云鉴权SecretKey                         |
 | BILICENTER_SCFNAMESPACE | 数据中心使用SCF的命名空间                   |
 | BILICENTER_SCFNAME      | 数据中心并发部署使用的SCF名                 |
+| BILICENTER_SCFQUALIFIER | (可选)并发中心部署SCF使用的目标版本         |
 | BILICENTER_REDIS_KWARGS | 用于连接Redis消息与配置中心的JSON参数字符串 |
 | BILICENTER_MYSQL_KWARGS | 用于连接MySQL核心数据库的JSON参数字符串     |
 

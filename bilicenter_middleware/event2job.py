@@ -55,6 +55,7 @@ def deploy_job(jobs: str, kwargs: dict) -> dict:
     return {
         "function_name": get_scf_name(),
         "namespace": get_scf_namespace(),
+        "qualifier": os.getenv("BILICENTER_SCFQUALIFIER") if os.getenv("BILICENTER_SCFQUALIFIER") else "$LATEST",
         "data": event
     }
 
