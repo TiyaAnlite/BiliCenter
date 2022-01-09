@@ -105,9 +105,15 @@ class ConcurrentController(object):
         if try_count:
             self.logger.info(f"SCF job(try {try_count}):{event['eid']}")
         try:
-            callback = json.loads(client.invoke(**event['job']))
-            callback.update(dict(callback_timestamp=int(time.time())))
-            callback.update(event)
+            if event["scf"]:
+                # SCF任务，开始部署
+                callback = json.loads(client.invoke(**event['job']))
+                callback.update(dict(callback_timestamp=int(time.time())))
+                callback.update(event)
+            else:
+                # 非SCF任务，直接回调
+                callback = dict(code=200, msg="ok", rid="", data=dict(), callback_timestamp=int(time.time()))
+                callback.update(event)
             # print(callback)
             if callback["code"] == 412 or callback["code"] == 500:  # 访问封禁或请求错误
                 self.logger.error(f"SCF {callback['code']}: {callback['msg']}")

@@ -48,22 +48,24 @@
     "eid": "61e16ac3-76bd-524d-a897-60b1d16de18e",
     "source": "0102",
     "attach": {},
+    "scf": true,
     "job": {},
     "event_timestamp": 1615856135
 }
 ```
 
-| keys            | values                                                     |
-| --------------- | ---------------------------------------------------------- |
-| eid             | 唯一事件ID                                                 |
-| source          | 事件发起的中间件                                           |
-| attach          | 事件附加信息，会原样带入事件回调信息中(数据类型强制为dict) |
-| job             | SCF jobs 详见下述内容                                      |
-| event_timestamp | 事件生成的时间                                             |
+| keys            | values                                                       |
+| --------------- | ------------------------------------------------------------ |
+| eid             | 唯一事件ID                                                   |
+| source          | 事件发起的中间件                                             |
+| attach          | 事件附加信息，会原样带入事件回调信息中(数据类型强制为dict)   |
+| scf             | 是否为SCF任务，决定是否要将事件转换为SCF任务并部署，不为SCF任务时将直接回调 |
+| job             | Jobs 详见下述内容                                            |
+| event_timestamp | 事件生成的时间                                               |
 
 
 
-### SCF jobs
+### Jobs
 
 并发中心接收并部署任务的交换格式，一般情况下不需要手动构建，以下内容仅作为参数说明，便于在以下的`事件回调信息`的`job`参数中提取数据。在构造数据时，只需要使用相关中间件封装的工具方法即可
 
@@ -75,7 +77,7 @@
     "namespace": "crawler",
     "qualifier": "$LATEST",
     "data": {
-        "job_codec": "0102",
+        "job_key": "biliCenter.bangumi.meta",
         "kwargs": {
             "arg_key": "arg_value"
         }
@@ -96,17 +98,17 @@
 
 ```json
 {
-    "job_codec": "0102",
+    "job_key": "biliCenter.bangumi.meta",
     "kwargs": {
         "arg_key": "arg_value"
     }
 }
 ```
 
-| keys      | values           |
-| --------- | ---------------- |
-| job_codec | 经编码的任务编码 |
-| kwargs    | 传递给任务的参数 |
+| keys    | values                       |
+| ------- | ---------------------------- |
+| job_key | 任务统一化键，定义任务时指定 |
+| kwargs  | 传递给任务的参数             |
 
 
 
@@ -129,18 +131,19 @@
 }
 ```
 
-| keys               | values                             |
-| ------------------ | ---------------------------------- |
-| code               | 任务执行返回码                     |
-| msg                | 任务执行结果信息                   |
-| rid                | 标志本次部署SCF任务的request_id    |
-| source             | 事件发起的中间件                   |
-| eid                | 事件ID                             |
-| attach             | 事件附加信息                       |
-| data               | 任务结构负载，即本次任务的执行结果 |
-| job                | 本次任务信息，详见上方`SCF jobs`   |
-| event_timestamp    | 事件生成时间                       |
-| callback_timestamp | 回调生成时间                       |
+| keys               | values                                 |
+| ------------------ | -------------------------------------- |
+| code               | 任务执行返回码，非SCF任务时固定200     |
+| msg                | 任务执行结果信息，非SCF任务时固定"ok"  |
+| rid                | 标志本次部署SCF任务的request_id        |
+| source             | 事件发起的中间件                       |
+| eid                | 事件ID                                 |
+| attach             | 事件附加信息                           |
+| data               | 任务结构负载，即本次任务的执行结果     |
+| scf                | 是否为SCF任务，非SCF时某些字段为空内容 |
+| job                | 本次任务信息，详见上方`jobs`           |
+| event_timestamp    | 事件生成时间                           |
+| callback_timestamp | 回调生成时间                           |
 
 
 

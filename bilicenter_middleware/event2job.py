@@ -12,16 +12,16 @@ def get_scf_namespace():
     return os.getenv("BILICENTER_SCFNAMESPACE")
 
 
-def deploy_job(jobs: str, kwargs: dict) -> dict:
+def deploy_job(job_key: str, kwargs: dict) -> dict:
     """
     生成部署任务所需参数\n
-    :param jobs: 任务名(任务统一化键)
+    :param job_key: 任务名(任务统一化键)
     :param kwargs: 传入参数
     :return: 可供scf SDK直接invoke()的任务数据
     """
 
     event = {
-        "job_codec": jobs,
+        "job_key": job_key,
         "kwargs": kwargs
     }
     return {
@@ -41,7 +41,7 @@ def accept_job(job_data: dict, job_map: dict) -> dict:
     :return: 请求返回的数据
     """
 
-    job_type = job_data["job_codec"]
+    job_type = job_data["job_key"]
     if job_type in job_map:
         resp = job_map[job_type](**job_data["kwargs"])
         return resp

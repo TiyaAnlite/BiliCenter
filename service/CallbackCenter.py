@@ -109,7 +109,7 @@ class CallbackCenter(object):
             with redis.StrictRedis(connection_pool=self.redis_pool) as call_r:
                 # 调用回调处理函数
                 try:
-                    self.callback_func[callback["job"]["data"]["job_codec"]](callback, call_r, self.sql_queue,
+                    self.callback_func[callback["job"]["data"]["job_key"]](callback, call_r, self.sql_queue,
                                                                              self.logger)
                 except Exception as err:
                     self.logger.error("Callback func error:")
