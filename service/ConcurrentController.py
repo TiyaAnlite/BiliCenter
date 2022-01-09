@@ -13,7 +13,7 @@ from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentClo
 if "../" not in sys.path:
     sys.path.append("../")
 from bilicenter_middleware.event import Channels, Sources
-from logger import Logger
+from bilicenter_middleware.logger import Logger
 
 
 class ConcurrentController(object):
@@ -153,7 +153,7 @@ class ConcurrentController(object):
             self.logger.error(f"Put a dead letter: {event['eid']}")
             self.event_callback_queue.put(callback)
             with redis.StrictRedis(connection_pool=self.redis_pool) as r:
-                r.lpush("dead_letter", json.dumps(callback))  # 死信队列
+                r.lpush("dead_letter", json.dumps(callback, ensure_ascii=False))  # 死信队列
         else:
             self.event_queue.put((try_count + 1, event))  # 发起有限重试
 

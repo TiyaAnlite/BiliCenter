@@ -5,7 +5,7 @@ import random
 
 import redis
 
-from .event2job import deploy_job, SCFJobs
+from .event2job import deploy_job
 
 
 class Channels(object):
@@ -54,14 +54,14 @@ class Event(object):
         return eid
 
 
-def new_event(jobs: str, kwargs: dict, source: str, attach: dict = None) -> Event:
+def new_event(job_key: str, kwargs: dict, source: str, attach: dict = None) -> Event:
     """
     生成一个事件\n
     **不包含eid**\n
-    :param jobs: 任务名(可用SCFJobs帮助类快速获取)
+    :param job_key: 任务名(任务统一化键)
     :param kwargs: 传入参数
     :param source: 事件来源(可用Sources帮助类快速获取)
     :param attach: 事件附加信息，类型强制为dict，会原样返回给回调信息
     :return: Event
     """
-    return Event(jobs, kwargs, source, attach)
+    return Event(job_key, kwargs, source, attach)

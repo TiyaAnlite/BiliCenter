@@ -3,8 +3,11 @@ import queue
 import logging
 
 import redis
-from bilicenter_middleware.event import SCFJobs, Sources, new_event
+from bilicenter_middleware.event import Sources, new_event
 from bilicenter_middleware.statement4SQL import make_update_query, make_insert_query
+
+# 运行时查找
+from jobs import Jobs
 
 
 def meta(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
@@ -36,11 +39,11 @@ def meta(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: l
                 "score_people": callback["data"]["media"]["rating"]["count"],
                 "score": callback["data"]["media"]["rating"]["score"]
             }
-        event_interact = new_event(SCFJobs.bangumi_interact_data, dict(season_id=sid), Sources.CallbackCenter,
+        event_interact = new_event(Jobs.BiliCenter.Bangumi.interact, dict(season_id=sid), Sources.CallbackCenter,
                                    attach=attch_score)
         eid = event_interact.push(r)
         # logger.info(f"Pushed new [InteractData] event {eid}")
-        event_collective = new_event(SCFJobs.bangumi_collective_info, dict(season_id=sid), Sources.CallbackCenter)
+        event_collective = new_event(Jobs.BiliCenter.Bangumi.collective, dict(season_id=sid), Sources.CallbackCenter)
         eid = event_collective.push(r)
         # logger.info(f"Pushed new [CollectiveInfo] event {eid}")
 
@@ -98,7 +101,7 @@ def collective(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, log
                     "s_index": ep["title"]
                 }
                 sql_queue.put(make_insert_query("map_episodes", ep_map, safety_mode=True))
-                event_aid = new_event(SCFJobs.video_info_simple, dict(bvid=ep["bvid"]), Sources.CallbackCenter,
+                event_aid = new_event(Jobs.BiliCenter.Video.infoSimple, dict(bvid=ep["bvid"]), Sources.CallbackCenter,
                                       attach=dict(pub=ep["pub_time"]))
                 event_aid.push(r)
 
@@ -125,14 +128,15 @@ def rank(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: l
                 "title": bangumi["title"]
             })
             sql_queue.put(make_insert_query("status_bangumi_rank", rank_data, safety_mode=True, update=True))
-            e = new_event(SCFJobs.bangumi_collective_info, dict(season_id=bangumi["season_id"]), Sources.CallbackCenter,
+            e = new_event(Jobs.BiliCenter.Bangumi.collective, dict(season_id=bangumi["season_id"]),
+                          Sources.CallbackCenter,
                           attach=dict(map_update=True))
             e.push(r)
 
 
 CALLBACK_INFO = {
-    SCFJobs.bangumi_meta: meta,
-    SCFJobs.bangumi_interact_data: interact,
-    SCFJobs.bangumi_collective_info: collective,
-    SCFJobs.bangumi_rank: rank
+    Jobs.BiliCenter.Bangumi.meta: meta,
+    Jobs.BiliCenter.Bangumi.interact: interact,
+    Jobs.BiliCenter.Bangumi.collective: collective,
+    Jobs.BiliCenter.Bangumi.pgcRank: rank
 }

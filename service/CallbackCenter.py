@@ -3,6 +3,7 @@ import sys
 import time
 import json
 import queue
+import logging
 import threading
 import collections
 from queue import Empty as queue_Empty
@@ -14,7 +15,7 @@ if "../" not in sys.path:
     sys.path.append("../")
 from bilicenter_middleware.event import Channels
 from bilicenter_middleware.discovery import auto_register
-import logger
+from bilicenter_middleware.logger import Logger
 
 
 class CallbackCenter(object):
@@ -26,9 +27,9 @@ class CallbackCenter(object):
     def __init__(self, log_file="BiliCenter_callbackCenter.log", debug=False):
         threading.current_thread().setName("Main")
         if debug:
-            self.logger = logger.Logger.get_file_debug_logger("CallbackCenter", log_file)
+            self.logger = Logger.get_file_debug_logger("CallbackCenter", log_file)
         else:
-            self.logger = logger.Logger.get_file_log_logger("CallbackCenter", log_file)
+            self.logger = Logger.get_file_log_logger("CallbackCenter", log_file)
         self.logger.info("Starting CallbackCenter")
         self.callback_func = auto_register(collections.defaultdict(lambda: self.__default_callback), "callback",
                                            self.logger)
@@ -71,7 +72,7 @@ class CallbackCenter(object):
         return self.sql.cursor()
 
     @staticmethod
-    def __default_callback(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, log: logger.logging.Logger):
+    def __default_callback(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, log: logging.Logger):
         """
         默认回调函数\n
         :param callback: 回调事件信息

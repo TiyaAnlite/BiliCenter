@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import json
+import logging
 import hashlib
 import collections
 
@@ -11,8 +12,7 @@ from croniter import croniter
 
 if "../" not in sys.path:
     sys.path.append("../")
-import logger
-from bilicenter_middleware.event import new_event, Channels, Sources
+from bilicenter_middleware.logger import Logger
 from bilicenter_middleware.discovery import auto_register
 
 
@@ -24,9 +24,9 @@ class FrontEndTrigger(object):
 
     def __init__(self, log_file="BiliCenter_frontEndTrigger.log", debug=False):
         if debug:
-            self.logger = logger.Logger.get_file_debug_logger("CallbackCenter", log_file)
+            self.logger = Logger.get_file_debug_logger("CallbackCenter", log_file)
         else:
-            self.logger = logger.Logger.get_file_log_logger("CallbackCenter", log_file)
+            self.logger = Logger.get_file_log_logger("CallbackCenter", log_file)
 
         self.trigger_func = auto_register(collections.defaultdict(lambda: self.__default_trigger_func), "trigger",
                                           self.logger)
@@ -53,7 +53,7 @@ class FrontEndTrigger(object):
         return self.sql.cursor()
 
     @staticmethod
-    def __default_trigger_func(rules_data: list, r: redis.StrictRedis, log: logger.logging.Logger):
+    def __default_trigger_func(rules_data: list, r: redis.StrictRedis, log: logging.Logger):
         """
         默认触发函数\n
         :param rules_data: 规则引擎执行数据

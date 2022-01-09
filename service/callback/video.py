@@ -3,8 +3,10 @@ import queue
 import logging
 
 import redis
-from bilicenter_middleware.event import SCFJobs
 from bilicenter_middleware.statement4SQL import make_insert_query
+
+# 运行时查找
+from jobs import Jobs
 
 
 def simple_video(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: logging.Logger):
@@ -32,5 +34,5 @@ def simple_video(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, l
 
 
 CALLBACK_INFO = {
-    SCFJobs.video_info_simple: simple_video
+    Jobs.BiliCenter.Video.infoSimple: simple_video
 }
