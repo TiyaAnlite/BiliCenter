@@ -16,13 +16,13 @@ def simple_video(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, l
         video_data = {
             "aid": callback["data"]["aid"],
             "bvid": callback["data"]["bvid"],
-            "view": callback["data"]["view"],
-            "danmaku": callback["data"]["danmaku"],
-            "reply": callback["data"]["reply"],
-            "favorite": callback["data"]["favorite"],
-            "coin": callback["data"]["coin"],
-            "share": callback["data"]["share"],
-            "liked": callback["data"]["like"],
+            "view": callback["data"]["view"] if callback["data"]["view"] > 0 else 0,
+            "danmaku": callback["data"]["danmaku"] if callback["data"]["danmaku"] > 0 else 0,
+            "reply": callback["data"]["reply"] if callback["data"]["reply"] > 0 else 0,
+            "favorite": callback["data"]["favorite"] if callback["data"]["favorite"] > 0 else 0,
+            "coin": callback["data"]["coin"] if callback["data"]["coin"] > 0 else 0,
+            "share": callback["data"]["share"] if callback["data"]["share"] > 0 else 0,
+            "liked": callback["data"]["like"] if callback["data"]["like"] > 0 else 0,
             "releaseTimestamp": callback["attach"]["pub"],
             "timestamp": int(time.time())
         }

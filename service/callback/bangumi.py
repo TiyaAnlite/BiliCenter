@@ -53,10 +53,10 @@ def interact(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logge
     if callback["code"] == 200:
         sid = callback["job"]["data"]["kwargs"]["season_id"]
         interact_data = {
-            "follow": callback["data"]["follow"],
-            "series_follow": callback["data"]["series_follow"],
-            "views": callback["data"]["views"],
-            "danmakus": callback["data"]["danmakus"],
+            "follow": callback["data"]["follow"] if callback["data"]["follow"] > 0 else 0,
+            "series_follow": callback["data"]["series_follow"] if callback["data"]["series_follow"] > 0 else 0,
+            "views": callback["data"]["views"] if callback["data"]["views"] > 0 else 0,
+            "danmakus": callback["data"]["danmakus"] if callback["data"]["danmakus"] > 0 else 0,
             "timestamp": int(time.time())
         }
         log_bangumi_data = {
@@ -117,10 +117,10 @@ def rank(callback: dict, r: redis.StrictRedis, sql_queue: queue.Queue, logger: l
                 "rank": bangumi["rank"],
                 "pts": bangumi["pts"],
                 "sid": bangumi["season_id"],
-                "danmakus": bangumi["stat"]["danmaku"],
-                "follow": bangumi["stat"]["follow"],
-                "series_follow": bangumi["stat"]["series_follow"],
-                "views": bangumi["stat"]["view"],
+                "danmakus": bangumi["stat"]["danmaku"] if bangumi["stat"]["danmaku"] > 0 else 0,
+                "follow": bangumi["stat"]["follow"] if bangumi["stat"]["follow"] > 0 else 0,
+                "series_follow": bangumi["stat"]["series_follow"] if bangumi["stat"]["series_follow"] > 0 else 0,
+                "views": bangumi["stat"]["view"] if bangumi["stat"]["view"] > 0 else 0,
                 "timestamp": nowtime
             }
             sql_queue.put(make_insert_query("logs_bangumi_rank", rank_data))
