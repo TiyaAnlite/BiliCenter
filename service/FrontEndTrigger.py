@@ -95,6 +95,10 @@ class FrontEndTrigger(object):
                     self.trigger[n]["cron"].next()
                     self.logger.info(
                         f"[{n} -> {self.trigger[n]['trigger']}]Next at: {time.strftime('%Y/%m/%d %H:%M:%S', time.localtime(self.trigger[n]['cron'].get_current()))}")
+        # 删多余触发器
+        for n in set(self.trigger.keys()).difference(self.redis.hkeys("FrontEndTrigger.trigger")):
+            self.logger.info(f"Delete trigger: {n}")
+            del self.trigger[n]
 
     def prev_rules(self, triggers: list, rules: list):
         """
@@ -134,7 +138,7 @@ class FrontEndTrigger(object):
         active_trigger_rules = []
         # Check trigger
         for name, t in self.trigger.items():
-            if t["cron"].get_current() <= time.time():
+            if t["cron"] and t["cron"].get_current() <= time.time():
                 t["cron"].next()
                 self.logger.info(f"Trigger: {name} -> {t['trigger']}")
                 active_trigger.append(t["trigger"])
@@ -156,9 +160,8 @@ class FrontEndTrigger(object):
         while True:
             now = int(time.time())
             self.read_trigger()
-            while int(time.time()) <= now + 10:  # 10秒检查一次任务信息
-                self.run_trigger()
-                time.sleep(1)
+            self.run_trigger()
+            time.sleep(1)
 
 
 if __name__ == '__main__':

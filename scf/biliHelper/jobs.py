@@ -18,3 +18,10 @@ class Jobs:
             """视频信息类任务"""
             info = "biliCenter.video.info"
             infoSimple = "biliCenter.video.infoSimple"
+
+    class Beitou:
+        """北投服务API"""
+
+        class Elec:
+            """电费"""
+            query = "Beitou.elec"

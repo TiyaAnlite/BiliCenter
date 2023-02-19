@@ -25,14 +25,14 @@ python -m pip install -r requirements.txt
 ### 环境与配置
 
 - 请确保拥有腾讯云SCF使用权限，并将`scf/biliHelper`下的SCF函数部署至腾讯云
-- 参照[环境变量文档](https://github.com/TiyaAnlite/BiliCenter/blob/main/docs/env.md)进行环境变量的配置，其中包括数据库相关配置
-- 根据提供的[SQL](https://github.com/TiyaAnlite/BiliCenter/blob/main/docs/mod_biliCenter.sql)来创建相关的表
+- 参照[环境变量文档](docs/env.md)进行环境变量的配置，其中包括数据库相关配置
+- 根据提供的[SQL](docs/mod_biliCenter.sql)来创建相关的表
 
 ### 首次运行
 
 - 定位至`service`下，运行`ConcurrentController.py`，第一次运行会往Redis中写入初始配置并退出
 
-- 可以参照[配置说明](https://github.com/TiyaAnlite/BiliCenter/blob/main/docs/config.md)按需修改运行时配置
+- 可以参照[配置说明](docs/config.md)按需修改运行时配置
 
 ### 正式运行
 
@@ -50,9 +50,9 @@ python -m pip install -r requirements.txt
 
 `service/trigger`和`service/callback`下分别为触发器和回调，可自行新增，中间件启动时会自动进行发现
 
-**本文档还有待进一步完善，关于任务负载的定义、触发规则等细节，移步[协议说明](https://github.com/TiyaAnlite/BiliCenter/blob/main/docs/protocol.md)文档**
+**本文档还有待进一步完善，关于任务负载的定义、触发规则等细节，移步[协议说明](docs/protocol.md)文档**
 
 ## 系统设计
 
-![BiliCenter](https://raw.githubusercontent.com/TiyaAnlite/BiliCenter/main/docs/BiliCenter.svg)
+![BiliCenter](docs/BiliCenter.svg)
 
